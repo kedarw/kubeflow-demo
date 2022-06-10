@@ -1,0 +1,30 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  generateName: gpu-test-
+  annotations: {pipelines.kubeflow.org/kfp_sdk_version: 1.8.12, pipelines.kubeflow.org/pipeline_compilation_time: '2022-06-10T14:58:24.686484',
+    pipelines.kubeflow.org/pipeline_spec: '{"description": "Check if GPU is available.",
+      "name": "GPU Test"}'}
+  labels: {pipelines.kubeflow.org/kfp_sdk_version: 1.8.12}
+spec:
+  entrypoint: gpu-test
+  templates:
+  - name: gpu-test
+    dag:
+      tasks:
+      - {name: test-gpu, template: test-gpu}
+  - name: test-gpu
+    container:
+      args: [nvidia-smi]
+      command: [sh, -c]
+      image: tensorflow/tensorflow:latest-gpu
+      resources:
+        limits: {nvidia.com/gpu: 1}
+    metadata:
+      labels:
+        pipelines.kubeflow.org/kfp_sdk_version: 1.8.12
+        pipelines.kubeflow.org/pipeline-sdk-type: kfp
+        pipelines.kubeflow.org/enable_caching: "true"
+  arguments:
+    parameters: []
+  serviceAccountName: pipeline-runner
