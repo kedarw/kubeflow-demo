@@ -1,1 +1,4 @@
 kfp
+numpy
+keras
+tensorflow
